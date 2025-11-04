@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Buckshot Roulette</title>
+    <style>
+        body { 
+            font-family: Arial; 
+            background: #111; 
+            color: white; 
+            text-align: center;
+            padding: 50px 20px;
+        }
+        .menu-btn {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 15px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        #roomIdInput {
+            padding: 10px;
+            margin: 10px;
+            width: 150px;
+        }
+    </style>
+</head>
+<body>
+    <h1>💀 BUCKSHOT ROULETTE 💀</h1>
+    
+    <button class="menu-btn" onclick="location.href='singleplayer.html'">
+        🔫 单机游戏
+    </button>
+    
+    <button class="menu-btn" onclick="createRoom()">
+        🎮 创建房间
+    </button>
+    
+    <div>
+        <input type="text" id="roomIdInput" placeholder="输入房间ID">
+        <button class="menu-btn" onclick="joinRoom()">加入房间</button>
+    </div>
+
+    <script>
+        async function createRoom() {
+            // 这里是简化版 - 实际需要连接后端
+            const roomId = Math.random().toString(36).substring(2, 6).toUpperCase();
+            alert(`房间创建成功！房间ID: ${roomId}\n\n分享这个ID给朋友吧！`);
+            localStorage.setItem('roomId', roomId);
+            window.location.href = `multiplayer.html?room=${roomId}`;
+        }
+
+        function joinRoom() {
+            const roomId = document.getElementById('roomIdInput').value.trim().toUpperCase();
+            if(roomId.length === 4) {
+                localStorage.setItem('roomId', roomId);
+                window.location.href = `multiplayer.html?room=${roomId}`;
+            } else {
+                alert('请输入4位房间ID');
+            }
+        }
+    </script>
+</body>
+</html>
