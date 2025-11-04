@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>单机模式 - Buckshot Roulette</title>
+    <style>
+        body { 
+            font-family: Arial; 
+            background: #222; 
+            color: white; 
+            padding: 20px;
+        }
+        .game-container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .player {
+            margin: 20px 0;
+            padding: 15px;
+            border: 2px solid #e74c3c;
+            border-radius: 10px;
+        }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        #message {
+            margin: 15px 0;
+            padding: 10px;
+            background: #333;
+            min-height: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🔫 单机模式</h1>
+        <button onclick="location.href='index.html'">← 返回主菜单</button>
+        
+        <div class="player">
+            <h3>玩家: <span id="playerHP">5</span> ❤️</h3>
+            <button onclick="shootSelf()">对自己开枪</button>
+            <button onclick="shootEnemy()">对敌人开枪</button>
+        </div>
+        
+        <div class="player">
+            <h3>敌人: <span id="enemyHP">5</span> ❤️</h3>
+        </div>
+        
+        <div id="message">游戏开始！轮到你行动。</div>
+        <div>当前子弹: <span id="currentBullet">???</span></div>
+    </div>
+
+    <script>
+        // 简单的单机版游戏逻辑
+        let playerHP = 5;
+        let enemyHP = 5;
+        let shotgun = ['live', 'blank', 'blank', 'live', 'blank'];
+        let currentChamber = 0;
+        let playerTurn = true;
+
+        function updateUI() {
+            document.getElementById('playerHP').textContent = playerHP;
+            document.getElementById('enemyHP').textContent = enemyHP;
+        }
+
+        function nextTurn() {
+            playerTurn = !playerTurn;
+            const message = document.getElementById('message');
+            if(playerTurn) {
+                message.textContent = '轮到你行动';
+            } else {
+                message.textContent = '敌人思考中...';
+                setTimeout(enemyTurn, 1500);
+            }
+        }
+
+        function shootSelf() {
+            if(!playerTurn) return;
+            
+            const bullet = shotgun[currentChamber];
+            document.getElementById('currentBullet').textContent = bullet;
+            
+            if(bullet === 'blank') {
+                document.getElementById('message').textContent = '空包弹！安全，你继续行动！';
+            } else {
+                playerHP--;
+                document.getElementById('message').textContent = '实弹！你受伤了！';
+                if(playerHP <= 0) gameOver('敌人');
+            }
+            
+            currentChamber++;
+            if(currentChamber >= shotgun.length) reloadGun();
+            if(bullet === 'live') nextTurn();
+            updateUI();
+        }
+
+        function shootEnemy() {
+            if(!playerTurn) return;
+            
+            const bullet = shotgun[currentChamber];
+            document.getElementById('currentBullet').textContent = bullet;
+            
+            if(bullet === 'blank') {
+                document.getElementById('message').textContent = '空包弹！敌人安全！';
+            } else {
+                enemyHP--;
+                document.getElementById('message').textContent = '实弹！敌人受伤了！';
+                if(enemyHP <= 0) gameOver('玩家');
+            }
+            
+            currentChamber++;
+            if(currentChamber >= shotgun.length) reloadGun();
+            nextTurn();
+            updateUI();
+        }
+
+        function enemyTurn() {
+            // AI简单逻辑：50%概率对自己开枪
+            if(Math.random() > 0.5 && shotgun[currentChamber] === 'blank') {
+                shootSelf();
+            } else {
+                shootEnemy();
+            }
+        }
+
+        function reloadGun() {
+            // 简化版重新装弹
+            shotgun = ['live', 'blank', 'blank', 'live', 'blank'].sort(() => Math.random() - 0.5);
+            currentChamber = 0;
+        }
+
+        function gameOver(winner) {
+            alert(`游戏结束！${winner}胜利！`);
+            location.reload();
+        }
+
+        // 初始化游戏
+        reloadGun();
+        updateUI();
+    </script>
+</body>
+</html>
